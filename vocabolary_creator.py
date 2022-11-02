@@ -36,9 +36,10 @@ class create_vocab_class:
             self,
             vocabulary,
     ):
+        self.dataset = {}
         self.vocabulary = {}
 
-    def clean_text(sentence):
+    def clean_and_tokenize_text(self, sentence, ):
         # remove non alphabetic sequences
         pattern = re.compile(r'[^a-z]+')
         sentence = sentence.lower()
@@ -46,6 +47,9 @@ class create_vocab_class:
 
         # Tokenize
         word_list = word_tokenize(sentence)
+        return word_list
+
+    def remove_stopwords_and_shorts_text(self, word_list, ):
 
         # stop words
         stopwords_list = set(stopwords.words('english'))
@@ -59,10 +63,9 @@ class create_vocab_class:
         word_list = [word for word in word_list if len(word) > 2]
         # remove punctuation
         # word_list = [word for word in word_list if word not in punct]
+        return word_list
 
-        # stemming
-        # ps  = PorterStemmer()
-        # word_list = [ps.stem(word) for word in word_list]
+    def lemmatize_text(self, word_list, ):
 
         # lemmatize
         lemma = WordNetLemmatizer()
@@ -71,47 +74,55 @@ class create_vocab_class:
         sentence = ' '.join(word_list)
 
         return sentence
-    def create_vocab(self, ):
-        # Load news data set
-        # remove meta data headers footers and quotes from news dataset
-        dataset = fetch_20newsgroups(shuffle=True,
-                                    random_state=32,
-                                    remove=('headers', 'footers', 'qutes'))
 
-            # clean text data
-            # remove non alphabetic characters
-            # remove stopwords and lemmatize
+    def preprocess_text(self, inp_sentence, ):
+
+        word_list = self.clean_and_tokenize_text(inp_sentence)
+        word_list =  self.remove_stopwords_and_shorts_text(word_list)
+        sentence = self. lemmatize_text(word_list)
+        return sentence
+
+    def import_data_set(self, dataset_name):
+        if dataset_name == '20newsgroup':
+            # Load news data set
+            # remove meta data headers footers and quotes from news dataset
+            dataset = fetch_20newsgroups(shuffle=True,
+                                        random_state=32,
+                                        remove=('headers', 'footers', 'qutes'))
+        else:
+            dataset = {}
+        self.dataset = dataset
+        return dataset
+
+    def create_df(self, dataset, ):
 
         # put your data into a dataframe
         news_df = pd.DataFrame({'News': dataset.data
-        #                         ,
-        #                        'Target': dataset.target
                                })
-
-        # get dimensions of data
-        news_df.shape
-
-        news_df['News'] = news_df['News'].apply(lambda x: self.clean_text(str(x)))
-
-        # we'll use tqdm to monitor progress of data cleaning process
-        # create tqdm for pandas
-        tqdm.pandas()
-        # clean text data
-        news_df['News'] = news_df['News'].apply(lambda x: self.clean_text(str(x)))
+        # preprocess text data
+        news_df['News'] = news_df['News'].apply(lambda x: self.preprocess_text(str(x)))
 
         words = [item for idx,val in news_df.iterrows() for item in val['News'].split()]
 
-        self.vocabulary = dict(
+        return words
+
+    def create_vocab(self, words, ):
+
+        dataset = self.import_data_set('20newsgroup')
+        words = self.create_df(dataset)
+
+        vocabulary = dict(
             zip(
                 sorted(words),
                 np.arange(len(words)),
             ),
         )
+        self.vocabulary = vocabulary
+        return vocabulary
 
 
     def print_dict(self,
             path: str = '/vocab.txt',
-
         ):
             with open(path, 'a') as f:
                 for word, cnt in self.vocabulary:
