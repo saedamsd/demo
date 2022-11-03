@@ -83,22 +83,26 @@ class create_vocab_class:
         return sentence
 
     def import_data_set(self, dataset_name):
+
         if dataset_name == '20newsgroup':
             # Load news data set
             # remove meta data headers footers and quotes from news dataset
+
             dataset = fetch_20newsgroups(shuffle=True,
                                         random_state=32,
                                         remove=('headers', 'footers', 'qutes'))
         else:
             dataset = {}
-        self.dataset = dataset
-        return dataset
-
-    def create_df(self, dataset, ):
-
         # put your data into a dataframe
         news_df = pd.DataFrame({'News': dataset.data
                                })
+
+        self.dataset = dataset
+        return news_df
+
+    def create_df(self, news_df, ):
+
+
         # preprocess text data
         news_df['News'] = news_df['News'].apply(lambda x: self.preprocess_text(str(x)))
 
@@ -108,8 +112,8 @@ class create_vocab_class:
 
     def create_vocab(self, words, ):
 
-        dataset = self.import_data_set('20newsgroup')
-        words = self.create_df(dataset)
+        news_df = self.import_data_set('20newsgroup')
+        words = self.create_df(news_df)
 
         vocabulary = dict(
             zip(
