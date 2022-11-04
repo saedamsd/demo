@@ -62,15 +62,32 @@ class TestVocabClass(unittest.TestCase):
 
     def test_GMM_validation_plot(self, X_train, y_train, estimator, name, index, h,):
         with mock.patch(
-                target='matplotlib.pyplot.subplot',
-        ) as subplot_mock, mock.patch(
-                target='GMM_class.GMM_class_.make_ellipses',) as make_ellipses_mock:
+                target='matplotlib.pyplot',
+        ) as pyplot_mock, mock.patch(
+                target='GMM_class.GMM_class_.make_ellipses',) as make_ellipses_mock \
+                , mock.patch(target='GMM_class.GMM_class_.save_GMM', ) as save_GMM_mock:
 
-            subplot_mock.return_value = None
             make_ellipses_mock.return_value = None
+# Eran - shall we mock pyplo ??? its wont fail and par of the flow
+            pyplot_mock.subplot.return_value = None
+            pyplot_mock.scatter.return_value = None
+            pyplot_mock.xticks.return_value = None
+            pyplot_mock.yticks.return_value = None
+            pyplot_mock.title.return_value = None
+            pyplot_mock.text.return_value = None
+            pyplot_mock.savefig.return_value = None
+            save_GMM_mock.return_value = None
 
-    def test_GMM_train(self, X_train, y_train, colors, ):
-        pass
+            gmm_instance = GMM_class_()
+            estimators = gmm_instance.GMM_validation_plot(self, X_train, y_train, estimator, name, index, h,)
+
+    def test_GMM_train(self, X_train, y_train, colors,):
+        with mock.patch(target='GMM_class.GMM_class_.GMM_validation_plot_mock', ) as GMM_validation_plot_mock:
+
+            GMM_validation_plot_mock.return_value = None
+
+            gmm_instance = GMM_class_()
+            estimators = gmm_instance.GMM_train(X_train, y_train, colors)
 
     def test_GMM_test_plot(self, X_test, y_test, colors, h, ):
         pass
