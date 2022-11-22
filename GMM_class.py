@@ -14,7 +14,8 @@ class GMMClass:
     def __init__(
             self,
             path='storage/',
-            fileop="GMM_outputs.txt"
+            fileop: str = 'GMM_outputs.txt',
+            fileplot: str = 'GMM_plot_fig_test',
     ):
         self.n_classes = 0
         self.n_estimators = 0
@@ -139,6 +140,7 @@ class GMMClass:
 
     def GMM_test_plot(
             self,
+            fileplot = 'GMM_plot_fig_test',
     ):
         n_estimators = len(self.estimators)
         for index, (name, estimator) in enumerate(self.estimators.items()):
@@ -171,6 +173,6 @@ class GMMClass:
             plt.xticks(())
             plt.yticks(())
             plt.title(name)
-            plt.savefig(self.path+'GMM_plot_fig_test')
+            plt.savefig(self.path+fileplot)
             return test_accuracy
 

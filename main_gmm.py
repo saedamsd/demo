@@ -136,87 +136,6 @@ def map_word2topic(
     return word2topics
 
 
-class ClusterCoordinateGenerator:
-    def __init__(
-            self,
-    ):
-        self.coordinates = []
-        self.max_attempts = 40
-        self.min_cluster_distance = 0.2
-
-    def generate_coordinates(
-            self,
-            num_of_clusters,
-    ):
-        list_coordinates = [
-            self.get_next_cluster_position()
-            for _ in range(num_of_clusters)
-        ]
-
-        return list_coordinates
-
-    def get_random_coordinate(
-            self,
-    ):
-        use_positive = random() < 0.5
-
-        if use_positive:
-            return random() * 0.8
-
-        return random() * 0.8 * -1
-
-    def is_far_enough(
-            self,
-            coordinates,
-            point,
-    ):
-        for coordinate in coordinates:
-            #             if dist(coordinate, point) < self.min_cluster_distance:
-            if cosine_distances(coordinate, point) < self.min_cluster_distance:
-                return False
-
-        return True
-
-    def get_next_cluster_position(
-            self,
-    ):
-        attempts = 0
-        random_x = self.get_random_coordinate()
-        random_y = self.get_random_coordinate()
-
-        is_finished_generating_clusters = False
-        while not is_finished_generating_clusters:
-            random_x = self.get_random_coordinate()
-            random_y = self.get_random_coordinate()
-            attempts += 1
-
-            is_far_enough = self.is_far_enough(
-                coordinates=self.coordinates,
-                point=[
-                    random_x,
-                    random_y,
-                ],
-            )
-
-            if is_far_enough:
-                is_finished_generating_clusters = True
-
-            if attempts > self.max_attempts:
-                is_finished_generating_clusters = True
-
-        new_coordinate = [
-            random_x,
-            random_y,
-        ]
-        self.coordinates.append(new_coordinate)
-
-        coordinates = {
-            'x': random_x,
-            'y': random_y,
-        }
-
-        return coordinates
-
 
 def main(
        path='GMM_outputs.txt',
@@ -345,9 +264,9 @@ def main(
 
     x_arr, y_arr = build_docs_cluster_labels(docs_per_cluster, doc_topic_lda)
 
-    gmm_inst = GMMClass('GMM_outputs.txt')
+    gmm_inst = GMMClass('storage/','GMM_outputs.txt')
     gmm_inst.split_train_test_data(x_arr, y_arr)
-    gmm_inst.GMM_init(["navy", "turquoise"], 2)
+    gmm_inst.GMM_init(["navy", "turquoise"], 21)
     gmm_inst.GMM_train()
     gmm_inst.GMM_test_plot()
 
