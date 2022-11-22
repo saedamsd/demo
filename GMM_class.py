@@ -32,6 +32,7 @@ class GMMClass:
             # Create a new directory because it does not exist
             os.makedirs(self.path)
 
+    #Given a text and path and file name the function write the text to the file
     def save_GMM(
             self,
             text: str = '',
@@ -53,6 +54,7 @@ class GMMClass:
         ) as f:
             f.write(text + '\n')
 
+    #given the dataset of input features and labels, the function will split the data into a test and train set
     def split_train_test_data(
             self,
             topic_matrix,
@@ -68,6 +70,7 @@ class GMMClass:
         self.X_train = self.X_train[self.y_train != -1]
         self.y_train = self.y_train[self.y_train != -1]
 
+    #given the gaussian mixture models and the colors it will draw the ellipses on the plot
     def make_ellipses(
             self,
             gmm,
@@ -105,7 +108,7 @@ class GMMClass:
                           )
 
         return ax
-
+    #given the number of clusters and the colors to be used this function will init the parameters of the Gaussian Mixture models
     def GMM_init(
             self,
             colors,
@@ -125,7 +128,7 @@ class GMMClass:
         self.estimators = estimators
         return estimators
 
-
+    #This function trains the inited GMM models based on the train set that we saved in earlier calls of the split function
     def GMM_train(
             self,
     ):
@@ -138,6 +141,7 @@ class GMMClass:
             )
             estimator.fit(self.X_train)
 
+    #given the trained GMMs this function draws the  ellipses and the data points and evalute the trained model on the test set and report accuracy
     def GMM_test_plot(
             self,
             fileplot = 'GMM_plot_fig_test',
@@ -168,7 +172,10 @@ class GMMClass:
                 self.y_test,
                 y_test_pred,
             )
-            self.save_GMM("confusion matrix:\n" % cm)
+            self.save_GMM("confusion matrix:\n")
+            for i in range(cm.shape[0]):
+                self.save_GMM(str([cm[i,j] for j in range(cm.shape[1])]) + "\n")
+
             plt.xticks(())
             plt.yticks(())
             plt.title(name)

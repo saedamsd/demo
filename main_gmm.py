@@ -142,8 +142,7 @@ def main(
 ) -> int:
 
 
-    # Load news data set
-    # remove meta data headers footers and quotes from news dataset
+    # Load news data set - remove meta data headers footers and quotes from news dataset
     dataset = fetch_20newsgroups(
         shuffle=True,
                                  random_state=32,
@@ -224,7 +223,6 @@ def main(
     for i in range(len(doc_topic_lda)):
         file_to_index_dict[i] = i
 
-
     labels = clustering_algo.fit_predict(
         X=topic_matrix,
     )
@@ -259,14 +257,23 @@ def main(
         }
 
     new_clusters = graph
-
     number_of_clusters = len(new_clusters)
-
-    x_arr, y_arr = build_docs_cluster_labels(docs_per_cluster, doc_topic_lda)
-
-    gmm_inst = GMMClass('storage/','GMM_outputs.txt')
-    gmm_inst.split_train_test_data(x_arr, y_arr)
-    gmm_inst.GMM_init(["navy", "turquoise"], 21)
+    x_arr, y_arr = build_docs_cluster_labels(
+        docs_per_cluster,
+        doc_topic_lda,
+    )
+    gmm_inst = GMMClass(
+        'storage/',
+        'GMM_outputs.txt',
+    )
+    gmm_inst.split_train_test_data(
+        x_arr,
+        y_arr,
+    )
+    gmm_inst.GMM_init(
+        ["navy", "turquoise"],
+        21,
+    )
     gmm_inst.GMM_train()
     gmm_inst.GMM_test_plot()
     return 0
