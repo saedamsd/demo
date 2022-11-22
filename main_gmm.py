@@ -269,7 +269,6 @@ def main(
     gmm_inst.GMM_init(["navy", "turquoise"], 21)
     gmm_inst.GMM_train()
     gmm_inst.GMM_test_plot()
-
     return 0
 
 

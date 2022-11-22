@@ -164,7 +164,6 @@ class GMMClass:
                 "Test accuracy: %.1f" % test_accuracy,
                 transform=h.transAxes,
             )
-
             cm = confusion_matrix(
                 self.y_test,
                 y_test_pred,

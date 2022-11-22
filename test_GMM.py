@@ -172,6 +172,5 @@ class TestGMMClass(unittest.TestCase):
             isGmmFile = os.path.isfile("storage/GMM_outputs_test.txt")
             self.assertEquals(isGmmFile, True)
 
-
 if __name__ == '__main__':
     unittest.main()
