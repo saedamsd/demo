@@ -16,61 +16,65 @@ class GMMClass:
             path='storage/',
             fileop: str = 'GMM_outputs.txt',
             fileplot: str = 'GMM_plot_fig_test',
+            dataset_x=[],
+            dataset_y=[],
     ):
+        self.dataset_x = dataset_x
+        self.dataset_y = dataset_y
         self.n_classes = 0
         self.n_estimators = 0
         self.colors = []
         self.estimators = {}
-        self.X_train = []
+        self.X_train = dataset_x
         self.X_test = []
-        self.y_train = []
+        self.y_train = dataset_y
         self.y_test = []
         self.path = path
         self.fileop = fileop
+
         isExist = os.path.exists(self.path)
         if not isExist:
             # Create a new directory because it does not exist
             os.makedirs(self.path)
 
-    #Given a text and path and file name the function write the text to the file
+    # Given a text and path and file name the function write the text to the file
     def save_GMM(
             self,
             text: str = '',
             path: str = None,
             fileop: str = None
     ):
-        # self.path = path
-        if path != None:
-            Path = path
+        if path is not None:
+            ver_path = path
         else:
-            Path = self.path
-        if fileop != None:
-            filePath = fileop
+            ver_path = self.path
+
+        if fileop is not None:
+            ver_filepath = fileop
         else:
-            filePath = self.fileop
+            ver_filepath = self.fileop
         with open(
-                self.path+filePath,
+                ver_path+ver_filepath,
                 'a',
         ) as f:
             f.write(text + '\n')
 
-    #given the dataset of input features and labels, the function will split the data into a test and train set
+    # given the dataset of input features and labels, the function will split the data into a test and train set
     def split_train_test_data(
             self,
-            topic_matrix,
-            labels,
+            test_percent,
     ):
         self.X_train, self.X_test, self.y_train, self.y_test = \
             train_test_split(
-                topic_matrix,
-                labels,
-                test_size=0.25,
+                self.dataset_x,
+                self.dataset_y,
+                test_size=test_percent,
                 random_state=42,
             )
         self.X_train = self.X_train[self.y_train != -1]
         self.y_train = self.y_train[self.y_train != -1]
 
-    #given the gaussian mixture models and the colors it will draw the ellipses on the plot
+    # given the gaussian mixture models and the colors, it will draw the ellipses on the plot
     def make_ellipses(
             self,
             gmm,
@@ -103,12 +107,15 @@ class GMMClass:
             ell.set_clip_box(ax.bbox)
             ell.set_alpha(0.5)
             ax.add_artist(ell)
-            ax.set_aspect("equal",
-                          "datalim",
-                          )
+            ax.set_aspect(
+                "equal",
+                "datalim",
+                )
 
         return ax
-    #given the number of clusters and the colors to be used this function will init the parameters of the Gaussian Mixture models
+
+    # given the number of clusters and the colors to be used this function will
+    # init the parameters of the Gaussian Mixture models
     def GMM_init(
             self,
             colors,
@@ -128,7 +135,8 @@ class GMMClass:
         self.estimators = estimators
         return estimators
 
-    #This function trains the inited GMM models based on the train set that we saved in earlier calls of the split function
+    # This function trains the inited GMM models based on the train set that
+    # we saved in earlier calls of the split function
     def GMM_train(
             self,
     ):
@@ -141,11 +149,23 @@ class GMMClass:
             )
             estimator.fit(self.X_train)
 
-    #given the trained GMMs this function draws the  ellipses and the data points and evalute the trained model on the test set and report accuracy
+    # Given the trained GMMs this function draws the  ellipses and the data points
+    # and evaluate the trained model on the test set and report accuracy
     def GMM_test_plot(
             self,
-            fileplot = 'GMM_plot_fig_test',
+            fileplot='GMM_plot_fig_test',
+            test_x = None,
+            test_y = None,
+
     ):
+        if test_x is not None:
+            self.X_test = test_x
+
+        if test_y is not None:
+            self.y_test = test_y
+        else:
+            ver_filepath = self.fileop
+
         n_estimators = len(self.estimators)
         for index, (name, estimator) in enumerate(self.estimators.items()):
             h = plt.subplot(2, n_estimators // 2, index + 1)

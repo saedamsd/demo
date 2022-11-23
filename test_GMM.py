@@ -53,7 +53,10 @@ class TestGMMClass(unittest.TestCase):
         gmm_instance = GMMClass(
             path=path,
             fileop=fileop,
+            dataset_x=self.topic_matrix,
+            dataset_y=self.labels,
         )
+
         gmm_instance.save_GMM(
             'text for printing',
             path,
@@ -76,11 +79,14 @@ class TestGMMClass(unittest.TestCase):
 
     def test_split_train_test_data(
             self,
+            test_percent=0.25,
     ):
-        gmm_instance = GMMClass()
+        gmm_instance = GMMClass(
+            dataset_x=self.topic_matrix,
+            dataset_y=self.labels,
+        )
         gmm_instance.split_train_test_data(
-            self.topic_matrix,
-            self.labels,
+            test_percent,
         )
 
         self.assertIsNotNone(gmm_instance.X_train)
@@ -108,21 +114,30 @@ class TestGMMClass(unittest.TestCase):
         y_len = len(self.labels)
         x_test_len = len(gmm_instance.X_test)
         y_test_len = len(gmm_instance.y_test)
-        self.assertEquals(x_test_len / x_len, 0.25)
-        self.assertEquals(y_test_len / y_len, 0.25)
+        self.assertEquals(
+            x_test_len / x_len,
+            test_percent,
+        )
+        self.assertEquals(
+            y_test_len / y_len,
+            test_percent,
+        )
 
     def test_make_ellipses(
             self,
     ):
         with mock.MagicMock(
                 target='sklearn.mixture.GaussianMixture', ) as gmm_magic_mock:
-            gmm_instance = GMMClass()
+            gmm_instance = GMMClass(
+                dataset_x=self.topic_matrix,
+                dataset_y=self.labels,
+            )
+
             h = plt.subplot(
                 2,
                 2 // 2,
                 1 + 1,
             )
-            #nothing to test other than crashing
             try:
                 gmm_instance.make_ellipses(
                     gmm_magic_mock,
@@ -136,7 +151,11 @@ class TestGMMClass(unittest.TestCase):
     def test_GMM_init(
             self,
     ):
-        gmm_instance = GMMClass()
+        gmm_instance = GMMClass(
+            dataset_x=self.topic_matrix,
+            dataset_y=self.labels,
+        )
+
         gmm_instance.GMM_init(
             ["navy", "turquoise"],
             2,
@@ -157,7 +176,10 @@ class TestGMMClass(unittest.TestCase):
         with mock.patch(
                 target='GMM_class.GMMClass', ) as GMMClass_mock:
             GMMClass_mock.return_value.GMM_validation_plot.return_value = None
-            gmm_instance = GMMClass()
+            gmm_instance = GMMClass(
+                dataset_x=self.topic_matrix,
+                dataset_y=self.labels,
+            )
             try:
                 gmm_instance.GMM_train()
                 self.assertTrue(True)
@@ -167,7 +189,6 @@ class TestGMMClass(unittest.TestCase):
 
     def test_GMM_test_plot(
             self,
-
     ):
         with mock.patch(
                 target='GMM_class.GMMClass', ) as GMMClass_mock, mock.patch(
@@ -180,6 +201,8 @@ class TestGMMClass(unittest.TestCase):
             gmm_instance = GMMClass(
                 path="storage/",
                 fileop="GMM_outputs_test.txt",
+                dataset_x=self.topic_matrix,
+                dataset_y=self.labels,
             )
 
             gmm_instance.X_test = self.topic_matrix

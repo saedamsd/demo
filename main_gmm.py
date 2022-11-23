@@ -145,8 +145,8 @@ def main(
     # Load news data set - remove meta data headers footers and quotes from news dataset
     dataset = fetch_20newsgroups(
         shuffle=True,
-                                 random_state=32,
-                                 remove=('headers', 'footers', 'qutes'),
+        random_state=32,
+        remove=('headers', 'footers', 'qutes'),
     )
 
     # put your data into a dataframe
@@ -263,12 +263,13 @@ def main(
         doc_topic_lda,
     )
     gmm_inst = GMMClass(
-        'storage/',
-        'GMM_outputs.txt',
+        path='storage/',
+        fileop='GMM_outputs.txt',
+        dataset_x=x_arr,
+        dataset_y=y_arr,
     )
     gmm_inst.split_train_test_data(
-        x_arr,
-        y_arr,
+        0.25,
     )
     gmm_inst.GMM_init(
         ["navy", "turquoise"],
